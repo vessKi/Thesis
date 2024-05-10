@@ -6,7 +6,7 @@ def nothing(x):
     pass
 
 # Initialize the camera
-cap = cv2.VideoCapture(2, cv2.CAP_DSHOW)  # Adjust the device index according to your setup
+cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)  # Adjust the device index according to your setup
 
 cv2.namedWindow("Trackbars")
 cv2.createTrackbar("L - H", "Trackbars", 0, 179, nothing)
