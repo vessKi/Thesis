@@ -8,14 +8,16 @@ import time  # for waiting
 import threading 
 import queue
 from queue import Queue
-from scipy.spatial import Voronoi, voronoi_plot_2d
 from shapely.geometry import LineString, Polygon, MultiLineString
+import random
+import shapely
+import tensorflow as tf
+import tensorflow_datasets as tfds
 
 #BIG UPDATE
 # no longer translating the coordinates within the function just in the gcode generation
 # finally have a somewhat accurate translation matrix with a 0,0 and a offset that is not quiete right yet.
 # need to adjust every other function to use the new matrix and simplyfy the entire thing by alot
-#get voroni to work and the paper detection
 
 
 with np.load('calibration_data.npz') as X: # generated with the chess calibration.py and the images in the folder chess
@@ -23,6 +25,59 @@ with np.load('calibration_data.npz') as X: # generated with the chess calibratio
 
 ser = serial.Serial('COM3', 115200, timeout=1)
 transformation_matrix = None
+
+# Load the Quick, Draw! dataset
+ds_train, ds_test = tfds.load('quickdraw_bitmap', split=['train', 'test'], as_supervised=True)
+
+def preprocess_image(image, label):
+    image = tf.image.resize(image, [28, 28]) / 255.0  # Resize and normalize
+    return image, label
+
+ds_train = ds_train.map(preprocess_image).batch(32).prefetch(tf.data.experimental.AUTOTUNE)
+ds_test = ds_test.map(preprocess_image).batch(32).prefetch(tf.data.experimental.AUTOTUNE)
+
+model = tf.keras.models.Sequential([
+    tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(28, 28, 1)),
+    tf.keras.layers.MaxPooling2D((2, 2)),
+    tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+    tf.keras.layers.MaxPooling2D((2, 2)),
+    tf.keras.layers.Flatten(),
+    tf.keras.layers.Dense(128, activation='relu'),
+    tf.keras.layers.Dense(345, activation='softmax')  # 345 classes in Quick, Draw!
+])
+
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+# Early stopping callback
+early_stopping = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=3)
+
+model.fit(ds_train, epochs=10, validation_data=ds_test, callbacks=[early_stopping])
+
+class_names = tfds.builder('quickdraw_bitmap').info.features['label'].names
+
+def predict_drawing(image_path):
+    img = tf.io.read_file(image_path)
+    img = tf.image.decode_png(img, channels=1)
+    img = tf.image.resize(img, [28, 28]) / 255.0
+    img = tf.expand_dims(img, 0)  # Add batch dimension
+
+    predictions = model.predict(img)
+    top_pred = class_names[tf.argmax(predictions[0])]
+    return top_pred
+
+image_path = 'path_to_your_image.png'
+top_prediction = predict_drawing(image_path)
+print(f"Top prediction: {top_prediction}")
+
+def get_drawing_suggestions(label):
+    suggestions = {
+        'cat': 'Draw a ball of yarn.',
+        'dog': 'Draw a bone.',
+        'flower': 'Draw a butterfly.'
+    }
+    return suggestions.get(label, 'No suggestion available')
+
+suggestion = get_drawing_suggestions(top_prediction)
+print(f"Suggestion: {suggestion}")
 
 # Store calibration points
 # Global variables for calibration
@@ -274,9 +329,9 @@ def generate_gcode(x_plot,y_plot, feed_rate=10000):
 def camera_to_plotter(point, transformation_matrix):
     global scaling_factor
     # Convert the point to homogenous coordinates (x, y, 1)
-    point_homogenous = np.array([point[0], point[1], 1])
+    point_homogenous = np.array([point[0], point[1], 1]).reshape((3, 1))
     # Apply the transformation matrix
-    transformed_point_homogenous = np.dot(transformation_matrix, point_homogenous)
+    transformed_point_homogenous = np.dot(transformation_matrix, point_homogenous).flatten()
     # Convert back from homogenous coordinates
     transformed_x, transformed_y = transformed_point_homogenous[:2]
     # Apply scaling factor
@@ -290,48 +345,6 @@ def camera_to_plotter(point, transformation_matrix):
     return int(x_plot_adjusted), int(y_plot_adjusted)
 
 
-#Voroni Stuff
-#helper to plot the diagram
-
-#draw voroni lines
-def draw_voronoi(shapes, transformation_matrix, paper_contour, image):
-    point=[]
-    points = [camera_to_plotter(point.reshape(-1, 2), transformation_matrix) for shape in shapes]
-    # Filter points to keep only those within the paper contour
-    points = [point for point in points if cv2.pointPolygonTest(paper_contour, point, False) >= 0]
-
-    if len(points) < 3:
-        print("Not enough points within bounds for Voronoi diagram.")
-        return
-
-    vor = Voronoi(points)
-    draw_voronoi_diagram(vor, paper_contour, image)
-
-def draw_voronoi_diagram(vor, paper_contour, image):
-    if vor is None:
-        print("No Voronoi diagram to draw.")
-        return
-
-    contour_polygon = Polygon(paper_contour.reshape(-1, 2))
-
-    for ridge_points in vor.ridge_vertices:
-        if all(v >= 0 for v in ridge_points):  # Ensure the vertices index is valid
-            start_point = tuple(vor.vertices[ridge_points[0]])
-            end_point = tuple(vor.vertices[ridge_points[1]])
-
-
-            # Clip the line
-            clipped_line = clip_line_to_contour(start_point, end_point, contour_polygon)
-
-            # If there is a clipped line, draw it
-            if clipped_line is not None:
-                for segment in clipped_line:
-                    # Ensure coordinates are in the correct format and type
-                    start = tuple(map(int, segment[0]))
-                    end = tuple(map(int, segment[1]))
-
-                   # draw_line(start, end)
-                    cv2.line(image, start, end, (0, 255, 0), 2)  # Draw in green for visibility
 
 def clip_line_to_contour(start_point, end_point, contour_polygon):
     line = LineString([start_point, end_point])
@@ -346,27 +359,8 @@ def clip_line_to_contour(start_point, end_point, contour_polygon):
     return None
 
 
-def create_voronoi_diagram(shapes, paper_contour):
-    points = []
-    # Collect all points from shapes
-    for shape in shapes:
-        for point in shape.reshape(-1, 2):
-
-            #causing a double transformation
-                #transformed_point = camera_to_plotter(point, transformation_matrix)
-                #points.append(transformed_point)
-
-            points.append(point)
-
-    if len(points) >= 3:
-        vor = Voronoi(points)
-        return vor
-    else:
-        print("Not enough points for a valid Voronoi diagram.")
-        return None
 
 
-# Convert Voronoi vertices directly and sends gcode
 def draw_line(start_pt, end_pt):
     # Send G-code to move to the start point
     send_gcode(generate_gcode(start_pt[0], start_pt[1]))  # Move to start
@@ -399,41 +393,16 @@ def smooth_contour(contour, smoothing_factor=0.002):
         return contour
     return cv2.approxPolyDP(contour, epsilon, True)
 
-def draw_paper_outline(paper_contour):
-    if paper_contour is None:
-        print("No paper contour detected.")
-        return
-    flattened_contour = paper_contour.reshape(-1, 2)
-    pen_up()
-
-    # Assuming the first point to start
-    first_point = flattened_contour[0]
-    # Move to the first point without drawing
-    x_plot, y_plot = camera_to_plotter(first_point, transformation_matrix)
-    send_gcode(f"G0 X{x_plot:.2f} Y{y_plot:.2f}")  # G0 command for rapid movement without drawing
-    pen_down()
-
-    # Draw lines to all subsequent points including drawing a line back to the first point to close the loop
-    for point in flattened_contour[1:]:
-        x_plot, y_plot = camera_to_plotter(point, transformation_matrix)
-        send_gcode(generate_gcode(x_plot, y_plot))
-
-    # Explicitly draw line back to the first point to ensure the contour is closed
-    x_plot, y_plot = camera_to_plotter(first_point, transformation_matrix)
-    send_gcode(generate_gcode(x_plot, y_plot))
-
-    pen_up()
 
     
-def prepare_gcode_sequence(detected_shapes, paper_contour):
-    gcode_sequence = ["M3 S50\n"]  # Pen up at the start of drawing
+def prepare_gcode_sequence(detected_shapes, transformation_matrix):
+    gcode_sequence = ["M3 S50\n"]
     for shape in detected_shapes:
-        # Process each shape to generate G-code
         for point in shape[1:]:
-            transformed_point = camera_to_plotter((point[0][0], point[0][1]), paper_contour)
-            # Generate G-code for moving to the point
+            transformed_point = camera_to_plotter((point[0][0], point[0][1]), transformation_matrix)
             gcode_sequence.append(generate_gcode(transformed_point[0], transformed_point[1]))
-    gcode_sequence.append("M3 S0\n")  # Pen down after drawing
+    gcode_sequence.append("M3 S0\n")
+    gcode_sequence.append("G0 X0 Y0\n")  # Move back to origin
     return gcode_sequence
 
 
@@ -468,105 +437,9 @@ def detect_shapes_on_paper(frame, paper_contour):
 
 
 
-    
-def draw_transformed_shape(shape_points_camera_coords):
-    # Check if transformation matrix is set
-    if transformation_matrix is None:
-        print("Transformation matrix not set. Cannot transform shape coordinates.")
-        return
-
-    # Transform shape points to plotter coordinates
-    shape_points_plotter_coords = [camera_to_plotter(point, transformation_matrix) for point in shape_points_camera_coords]
-
-    # Lower pen for the start of the drawing
-    pen_down()
-
-    # Move to the starting point without drawing
-    first_point = shape_points_plotter_coords[0]
-    send_gcode(f"G0 X{first_point[0]:.2f} Y{first_point[1]:.2f}\n")
-
-    # Lower pen to start drawing
-    pen_down()
-    # Generate G-code for each point and send to the plotter
-    for point in shape_points_plotter_coords[1:]:
-        gcode_command = generate_gcode(point[0], point[1])
-        send_gcode(gcode_command)
-
-    # Lift pen after finishing drawing
-    pen_up()
 
 
 
-
-# Ensure this adjustment in the draw_preview function or wherever draw_voronoi_diagram is called:
-def draw_preview(paper_contour, shapes, voronoi_diagram, image):
-    if paper_contour is not None:
-        cv2.drawContours(image, [paper_contour], -1, (255, 0, 0), 2)  # Red for paper contour
-    for shape in shapes:
-        cv2.drawContours(image, [shape], -1, (0, 0, 255), 2)  # Blue for shapes
-    
-    if voronoi_diagram:
-        draw_voronoi_diagram(voronoi_diagram,paper_contour, image)  # Call with only two required arguments
-
-    # Check if the transformation matrix is available
-    if transformation_matrix is not None:
-        # Define plotter total corners in plotter coordinates
-        plotter_total_corners = np.array([
-            [0, 0],  # Bottom-left
-            [PLOTTER_WIDTH, 0],  # Bottom-right
-            [PLOTTER_WIDTH, PLOTTER_HEIGHT],  # Top-right
-            [0, PLOTTER_HEIGHT]  # Top-left
-        ], dtype="float32")
-
-        # Transform plotter corners to camera view using the inverse transformation matrix
-        inv_transformation_matrix = cv2.invertAffineTransform(transformation_matrix)
-        plotter_total_corners_in_camera_view = cv2.transform(np.array([plotter_total_corners]), inv_transformation_matrix)[0].astype(int)
-
-        # Define drawable area corners within the plotter space
-        drawable_area_corners = np.array([
-            [drawable_area_offset_left, drawable_area_offset_top],
-            [drawable_area_offset_left + drawable_area_width, drawable_area_offset_top],
-            [drawable_area_offset_left + drawable_area_width, drawable_area_offset_top + drawable_area_height],
-            [drawable_area_offset_left, drawable_area_offset_top + drawable_area_height]
-        ], dtype="float32")
-
-        # Transform drawable area corners to camera view
-        drawable_area_corners_in_camera_view = cv2.transform(np.array([drawable_area_corners]), inv_transformation_matrix)[0].astype(int)
-
-        # Draw plotter total area in cyan
-        cv2.polylines(image, [plotter_total_corners_in_camera_view], isClosed=True, color=(0, 255, 255), thickness=2)  # Cyan for plotter total area
-        # Draw drawable area in a different color, e.g., green
-        cv2.polylines(image, [drawable_area_corners_in_camera_view], isClosed=True, color=(255, 255, 0), thickness=2)  # Green for drawable area
-
-    # Display the image with updates
-    cv2.imshow("Preview", image)
-    cv2.waitKey(1)  # Refresh the window
-
-
-##calibration
-def draw_boundaries():
-    global transformation_matrix
-    corners = [
-        (drawable_area_offset_left, drawable_area_offset_top),  # Top-left
-        (drawable_area_offset_left + drawable_area_width, drawable_area_offset_top),  # Top-right
-        (drawable_area_offset_left + drawable_area_width, drawable_area_offset_top + drawable_area_height),  # Bottom-right
-        (drawable_area_offset_left, drawable_area_offset_top + drawable_area_height)  # Bottom-left
-    ]
-
-
-    pen_down()
-    for corner in corners:
-        x_plot, y_plot = corner
-        send_gcode(generate_gcode(x_plot, y_plot))
-    # Close the rectangle by moving back to the first corner
-    x_plot, y_plot = corners[0]
-    send_gcode(generate_gcode(x_plot, y_plot))
-    pen_up()
-
-    print("Boundary rectangle has been drawn.")
-
-
-# Assuming 'expected_positions' and 'actual_positions' are lists of tuples
 
 
 
@@ -574,35 +447,24 @@ def on_press(key):
     global detected_shapes, transformation_matrix, paper_contour
     if key == keyboard.Key.space:
         if transformation_matrix is not None and paper_contour is not None:
-            voronoi_diagram = create_voronoi_diagram(detected_shapes, paper_contour)
-            # Create an image where the preview will be drawn
-            preview_image = np.zeros((720, 1280, 3), dtype=np.uint8)  # Adjust dimensions as needed
-            draw_preview(paper_contour, detected_shapes, voronoi_diagram, preview_image)
-            print("Voronoi diagram drawn on preview.")
-            draw_voronoi_diagram(voronoi_diagram, paper_contour, transformation_matrix)
-            print("Voronoi diagram drawn and sent to plotter.")
+            # Shuffle shapes before drawing
+            random.shuffle(detected_shapes)
 
-        # Collect G-code commands instead of sending them
-            gcode_commands = collect_gcode_commands(voronoi_diagram, paper_contour)
-            # Display G-code commands for review
+
+            # Generate G-code for drawing shapes
+            gcode_commands = prepare_gcode_sequence(detected_shapes, transformation_matrix)
             print("Review the following G-code commands:")
             for command in gcode_commands:
                 print(command)
-            
-            # Ask for user confirmation before sending!!!
+
             if input("Send G-code to plotter? (y/n): ").lower() == 'y':
                 for command in gcode_commands:
                     send_gcode(command)
                 print("G-code sent to plotter.")
             else:
                 print("G-code sending aborted.")
-    try:
-        if key.char == 'd' or key.char == 'D':  # Checks if 'd' or 'D' was pressed
-            print("D key pressed, drawing boundary rectangle.")
-            draw_boundaries()
-    except AttributeError:
-        pass  # Ignore other non-character keys
-      
+
+
 
 # Setup the listener
 listener = keyboard.Listener(on_press=on_press)
