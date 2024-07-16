@@ -2,8 +2,9 @@ import os
 import json
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import Sequential
+from tensorflow.keras.models import load_model, Sequential
 from tensorflow.keras.layers import Masking, LSTM, Dense, Input
+import random
 
 # Paths
 data_dir = r'C:\Users\user\AppData\Local\Google\Cloud SDK\quickdraw_dataset\quickdraw_dataset'
@@ -23,24 +24,29 @@ def load_categories(file_path):
 categories = load_categories(categories_file)
 num_classes = len(categories)
 
-# Function to parse NDJSON files
+# Function to parse NDJSON files with random sampling
 def parse_ndjson(file_path, max_samples):
     print(f"Parsing NDJSON file {file_path}")
-    drawings = []
     with open(file_path, 'r') as f:
-        for i, line in enumerate(f):
-            if i >= max_samples:
-                break
-            try:
-                data = json.loads(line.strip())
-                drawing = data['drawing']
-                simplified_drawing = []
-                for stroke in drawing:
-                    simplified_drawing.extend(zip(stroke[0], stroke[1]))
-                drawings.append(simplified_drawing)
-            except (json.JSONDecodeError, KeyError) as e:
-                print(f"Error decoding JSON on line: {line.strip()}")
-                print(f"Error message: {e}")
+        lines = f.readlines()
+    
+    # Shuffle the lines for random sampling
+    random.shuffle(lines)
+    
+    drawings = []
+    for i, line in enumerate(lines):
+        if i >= max_samples:
+            break
+        try:
+            data = json.loads(line.strip())
+            drawing = data['drawing']
+            simplified_drawing = []
+            for stroke in drawing:
+                simplified_drawing.extend(zip(stroke[0], stroke[1]))
+            drawings.append(simplified_drawing)
+        except (json.JSONDecodeError, KeyError) as e:
+            print(f"Error decoding JSON on line: {line.strip()}")
+            print(f"Error message: {e}")
     print(f"Parsed {len(drawings)} drawings from {file_path}")
     return drawings
 
@@ -84,7 +90,7 @@ def load_data_from_ndjson(data_dir, categories, max_samples_per_category):
 
 print("Loading data from NDJSON files...")
 
-max_samples_per_category = 1000
+max_samples_per_category = 1500
 X, y, max_length = load_data_from_ndjson(data_dir, categories, max_samples_per_category)
 
 # Split data into training and validation sets for each category
@@ -108,27 +114,32 @@ y_val = np.array(y_val)
 
 print(f"Training samples: {len(X_train)}, Validation samples: {len(X_val)}")
 
-# Model architecture
-def build_crnn_model(input_shape, num_classes):
-    print("Building the CRNN model...")
-    model = Sequential([
-        Input(shape=input_shape),
-        Masking(mask_value=0.),
-        LSTM(128, return_sequences=True),
-        LSTM(128),
-        Dense(256, activation='relu'),
-        Dense(num_classes, activation='softmax')
-    ])
-    return model
+# Load existing model
+if os.path.exists(model_path):
+    print(f"Loading existing model from {model_path}")
+    model = load_model(model_path)
+else:
+    # Model architecture
+    def build_crnn_model(input_shape, num_classes):
+        print("Building the CRNN model...")
+        model = Sequential([
+            Input(shape=input_shape),
+            Masking(mask_value=0.),
+            LSTM(128, return_sequences=True),
+            LSTM(128),
+            Dense(256, activation='relu'),
+            Dense(num_classes, activation='softmax')
+        ])
+        return model
 
-# Build and compile the model with a flexible input shape
-input_shape = (max_length, 3)  # Variable length sequence with 3 features
-model = build_crnn_model(input_shape, num_classes)
-model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-print(model.summary())
+    # Build and compile the model with a flexible input shape
+    input_shape = (max_length, 3)  # Variable length sequence with 3 features
+    model = build_crnn_model(input_shape, num_classes)
+    model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+    print(model.summary())
 
-# Train the model
-print("Training the model...")
+# Continue training the model
+print("Continuing the training of the model...")
 model.fit(X_train, y_train, validation_data=(X_val, y_val), epochs=10, batch_size=32)
 
 # Save the model

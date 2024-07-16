@@ -1,0 +1,28 @@
+CSI Factors,99k,16i,21n,79m,80l,104p,12h,17f,63e,19d,72g,54c,Setup
+Be creative and expressive,3,4,2,1,3,4,5,3,2,3,2,2,
+Become immersed in the activity,2,1,0,5,2,1,0,5,4,2,5,3,
+Enjoy using the system or tool,4,5,4,4,5,3,2,2,3,4,3,3,
+"Explore many different ideas, outcomes, or possibilities",1,3,4,2,4,5,3,4,5,5,4,3,
+Produce results that are worth the effort I put in,0,2,1,2,1,2,2,1,1,1,0,4,
+Work with other people,5,0,4,1,0,0,3,0,0,0,1,0,
+Test A,,,,,,,,,,,,,
+Collaboration,12,20,10,6,6,8,9,4,16,11,11,8,Setup 1
+Enjoyment,13,12,9,5,10,2,13,9,12,14,14,3,Setup 1
+Exploration,14,3,5,5,8,6,6,5,7,15,2,2,Setup 1
+Expressiveness,14,11,9,11,11,9,6,9,13,14,11,5,Setup 1
+Immersion,12,3,7,14,8,8,8,3,8,6,2,13,Setup 1
+Result Worth Effort,12,13,8,7,12,2,6,4,13,2,10,4,Setup 1
+Test B,,,,,,,,,,,,,
+Collaboration,11,19,13,8,7,17,6,4,18,18,20,8,Setup 2
+Enjoyment,12,12,10,6,12,17,9,9,14,17,20,10,Setup 2
+Exploration,7,13,6,7,11,13,6,3,10,20,20,4,Setup 2
+Expressiveness,11,17,8,5,13,16,8,8,17,16,14,16,Setup 2
+Immersion,4,6,7,10,9,16,6,8,9,2,2,16,Setup 2
+Result Worth Effort,15,13,8,5,15,16,7,4,14,15,15,14,Setup 2
+Test C,,,,,,,,,,,,,
+Collaboration,15,19,12,8,6,18,12,4,17,7,20,9,Setup 3
+Enjoyment,15,15,11,6,13,11,18,9,14,14,10,11,Setup 3
+Exploration,14,18,8,8,5,10,14,7,13,17,3,5,Setup 3
+Expressiveness,16,19,8,9,12,20,17,10,14,10,2,14,Setup 3
+Immersion,18,10,7,9,7,12,7,6,7,6,2,16,Setup 3
+Result Worth Effort,17,18,12,10,9,12,17,8,13,11,3,16,Setup 3
