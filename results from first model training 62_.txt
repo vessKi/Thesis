@@ -1,0 +1,57 @@
+Parsed 1000 drawings from C:\Users\user\AppData\Local\Google\Cloud SDK\quickdraw_dataset\quickdraw_dataset\wristwatch.ndjson
+Processing category 'yoga' with label 342
+Parsing NDJSON file C:\Users\user\AppData\Local\Google\Cloud SDK\quickdraw_dataset\quickdraw_dataset\yoga.ndjson
+Parsed 1000 drawings from C:\Users\user\AppData\Local\Google\Cloud SDK\quickdraw_dataset\quickdraw_dataset\yoga.ndjson
+Processing category 'zebra' with label 343
+Parsing NDJSON file C:\Users\user\AppData\Local\Google\Cloud SDK\quickdraw_dataset\quickdraw_dataset\zebra.ndjson
+Parsed 1000 drawings from C:\Users\user\AppData\Local\Google\Cloud SDK\quickdraw_dataset\quickdraw_dataset\zebra.ndjson
+Processing category 'zigzag' with label 344
+Parsing NDJSON file C:\Users\user\AppData\Local\Google\Cloud SDK\quickdraw_dataset\quickdraw_dataset\zigzag.ndjson
+Parsed 1000 drawings from C:\Users\user\AppData\Local\Google\Cloud SDK\quickdraw_dataset\quickdraw_dataset\zigzag.ndjson
+Padding sequences to the same length: 1309
+Loaded data for 345000 samples.
+Splitting data into training and validation sets...
+Training samples: 276000, Validation samples: 69000
+Building the CRNN model...
+2024-07-01 21:28:31.299847: I tensorflow/core/platform/cpu_feature_guard.cc:210] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+Model: "sequential"
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)                         ┃ Output Shape                ┃         Param # ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━┩
+│ masking (Masking)                    │ (None, 1309, 3)             │               0 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤
+│ lstm (LSTM)                          │ (None, 1309, 128)           │          67,584 │
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤  
+│ dense (Dense)                        │ (None, 256)                 │          33,024 │  
+├──────────────────────────────────────┼─────────────────────────────┼─────────────────┤  
+│ dense_1 (Dense)                      │ (None, 345)                 │          88,665 │  
+└──────────────────────────────────────┴─────────────────────────────┴─────────────────┘  
+ Total params: 320,857 (1.22 MB)
+ Trainable params: 320,857 (1.22 MB)
+ Non-trainable params: 0 (0.00 B)
+None
+Training the model...
+Epoch 1/10
+2024-07-01 21:28:35.725157: E tensorflow/core/util/util.cc:131] oneDNN supports DT_BOOL only on platforms with AVX-512. Falling back to the default Eigen-based implementation if present.                                                                                    ly on platforms with AVX-512. Falling back to the default Eigen-based implementation if present.
+8625/8625 ━━━━━━━━━━━━━━━━━━━━ 12964s 2s/step - accuracy: 0.1395 - loss: 4.2813 - val_accuracy: 0.3706 - val_loss: 2.7049
+Epoch 2/10
+8625/8625 ━━━━━━━━━━━━━━━━━━━━ 12543s 1s/step - accuracy: 0.4063 - loss: 2.5266 - val_accuracy: 0.4571 - val_loss: 2.2868
+Epoch 3/10
+8625/8625 ━━━━━━━━━━━━━━━━━━━━ 12541s 1s/step - accuracy: 0.4867 - loss: 2.1328 - val_accuracy: 0.5002 - val_loss: 2.0927
+Epoch 4/10
+8625/8625 ━━━━━━━━━━━━━━━━━━━━ 12563s 1s/step - accuracy: 0.5293 - loss: 1.9329 - val_accuracy: 0.5189 - val_loss: 2.0010
+Epoch 5/10
+8625/8625 ━━━━━━━━━━━━━━━━━━━━ 12604s 1s/step - accuracy: 0.5591 - loss: 1.7915 - val_accuracy: 0.5303 - val_loss: 1.9569
+Epoch 6/10
+8625/8625 ━━━━━━━━━━━━━━━━━━━━ 12552s 1s/step - accuracy: 0.5769 - loss: 1.7033 - val_accuracy: 0.5452 - val_loss: 1.8938
+Epoch 7/10
+8625/8625 ━━━━━━━━━━━━━━━━━━━━ 12595s 1s/step - accuracy: 0.5917 - loss: 1.6313 - val_accuracy: 0.5566 - val_loss: 1.8564
+Epoch 8/10
+8625/8625 ━━━━━━━━━━━━━━━━━━━━ 12610s 1s/step - accuracy: 0.6062 - loss: 1.5687 - val_accuracy: 0.5577 - val_loss: 1.8479
+Epoch 9/10
+8625/8625 ━━━━━━━━━━━━━━━━━━━━ 12672s 1s/step - accuracy: 0.6159 - loss: 1.5265 - val_accuracy: 0.5542 - val_loss: 1.8511
+Epoch 10/10
+8625/8625 ━━━━━━━━━━━━━━━━━━━━ 12863s 1s/step - accuracy: 0.6232 - loss: 1.4896 - val_accuracy: 0.5642 - val_loss: 1.8223
+Saving the model to C:\Users\user\AppData\Local\Google\Cloud SDK\quickdraw_dataset\quickdraw_dataset\model\quickdraw_model.keras...
+Model saved successfully.
