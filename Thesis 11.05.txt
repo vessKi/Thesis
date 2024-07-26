@@ -1,0 +1,159 @@
+ Thestudy “It Takes Two: Using Co-creation to Facilitate Child-Robot Co-regulation”
+ explores how child-robot interaction can be enhanced through co-creation. This ap
+proach aims to improve children’s sense of control and acceptance of the robot by
+ making interactions more personalized and meaningful. The research found that
+ co-creation activities not only facilitated collaboration, but also positively impacted
+ children’s perception of the robot. Even tho my test subjects won’t be children, the
+ focus on the co-creation process applies to my system. [?]
+
+ The article “Exploring Co-creative Drawing Workflows” discusses a study focused
+ on the integration of technology in the artistic drawing process, without a drawing
+ robot. Test subjects ranging from professional illustrators to art students aimed
+ to find potential roles for technology in the workflow of artists. Through surveys,
+ interviews and drawing exercises, the looked at the automation of creative tasks
+ skeptical. My project will hopefully show similarities when evaluating the impact
+ of the robot on the creative process the user goes through. [?]
+
+The first contact to the world of Pen Plotters began after a module I visited, held by Frieder Nake in 2020, one of the early pioneers of the field. He introduced us to the general concept of Computer Art and its development from the early 60s, showing art works and explaining them in detail. Hearing this from someone who was there when all this happened and someone who meet fellow mathematics and artists from the time. Introducing many names, some of which I began to follow up a little more in detail, many of these names weren’t artist but rather Mathematicians with a good sense for atheistic or ingeniors with a good idea of geometry and hardware to create some of their own. Not only the history but also the ancient technology used to create these pieces inspired. One of the lesser-known artists in the field of Computer art, probably not known at all in the field is Sougwen Chung, the Chinese / Canadian Artist experiments with many art styles but her D.O.U.G (Drawing Operations Unit: Generation) inspired anything I from then on did with the Pen plotter. Drawing
+ Operations Unit: Generation (D.O.U.G.) 1, 2, and 3,” have influenced the development of the idea to use the Pen Plotter as a tool to interact with humans. She herself interacts with her Projects, but here again. It’s always her and the robot never a outstanding user, someone without knowledge about the system. Sougwen
+ Chung started her project in 2015 and has completed two follow-up projects since
+ then. These art projects focus on the aesthetic aspect of robotic arms, drawing in
+ collaboration with her in a collaboration.
+
+
+The Plotter
+
+The Pen Plotter is self-built specifically for this project, the base of the software is made from aluminum rods, some steel balls for the cart and many custom 3D printed parts. The Arduino Uno is the heart of the system, on top of which a CNC shield controls the two Nema Stepper Motors all powered by a 5V power supply. A 4,8g micro-Servo sits on the tip of the y-axis in a 3D printed case, the Servo acts as the Z-axis and lifts the Pen up and down. The X and Y-axis move independent, each nema controls a belt that moves the axis. The Arduino including most of the wiring sits in a case on the left side of the plotter, this allows for a steady stand on a table to draw without the plotter sliding around or moving. The cart connecting the 2 axis has a pin, if removed the plotter can fold the y-axis and be transported easily, without removing the belts or cables. The software is a custom version of the open source GRBL (Source) GRBL is a well-known software for homemade CNC and Laser engraving machines. GRBL allows me to control the Pen Plotter with G-Code. Since there is no Z-axis the G-code is made up of some X and Y coordinates and the Feed Rate, the servo is controlled over the M3 command thanks to the CNC shield. All other software used is written as part of this and exclusivly for this project.   
+
+
+Understanding the Software and Setup / Workflow
+
+The Pen Plotter and Human sit down at a Table, the Human has the freedom to draw on the paper without any 'Einschränkungen', the Plotter won't draw until the Human is done. This Workflow is necessary due to the Plotters movement, once the Pen Plotter draws the Y-axis moves over the Paper. The Human can no longer draw freely and would have to pause and wait for the Pen Plotter to either finish or move to the other end of the Paper. Prior Test with a different Plotter that operates on one long belt system which is controlled by both motors simultaneously gave the same result. A simultaneous drawing only works when the plotter is either big enough or when the Plotter Pen stops when the Humans Hand is to close to the moving Axis.  
+ 
+The Setup sits on a table, it uses a 720p Webcam mounted about half a meter above the Paper laying on the tables surface. The Webcam is mounted to a Tripod which also holds two bright LED Lights that have a LightFARBE adjustment. The Plotter sits centered underneath the Webcam. The Plotter has three yellow markers that are used to calculate a Translation Matrix which allows a translation between the Camera-Coordinate-System and the Plotter-Coordinate-System. The Paper is attached to the table so it doesn’t move during the drawing process. 
+When starting the system the Camera is initialized along with the Serial Port of the Plotter /ser = serial.Serial('COM4', 115200)/, the Baud rate sets the Speed on which the Arduino can receive messages. When the Camera initializes and the three yellow markers are detected it will take a screenshot and calculate a translation matrix, knowing the real world distances between the yellow points and correcting the camera with a previously created matrix using the  ??? paper_corrector_chessboard.py ???. Along with the Matrix a scaling factor is calculated and adjusts the coordinate systems. Given that a camera coordinate system has its origin in the top left corner and the Pen Plotter has its Origin in the bottom left the system needs to take this into account. Once all translations are done correctly there is visual feedback showing the three detected yellow marks, the Plotters Coordinate System and the drawable area of the Plotter, this differs due to the Plotter not being able to reach the entire surface within the Plotter Coordinate System. The drawable area is the are the Pen can draw on, this includes an offset that is added at the program start. The Program start can be done either after the human drawing has finished or before, the paper detection is not part of the Program start.
+
+
+Thesis Update 18.06
+
+Remove on Personal Questioneer the highest level of education
+Rating der persönlichen questions auch als likert 
+Mit experienc of robotic = verständis des Roboters, Kenntnisse mit Arduino usw.
+could also be removed
+
+What does the robot draw
+
+
+Low impact
+detect existing shape- save shapes- copy exsiting shapes on empty space
+
+high Impact 
+add existing shapes on empty space and add patters onto shapes rawn by the user 
+
+Based of Lisa Taskquestioneer
+1-10Likert Scala and then A-B Questions 
+Extra Questions 
+The Interaction with the Robot was … annoyingand 0 --- 7 enjoable 
+The interaction with the Robot was ... not understandable 0 --- understanable
+The interaction with the Robot was … creative --- dull
+The interaction with the Robot was … easy to learn --- dificult to learn
+The interaction with the Robot was … valuable --- inferior
+The interaction with the Robot was … boring --- exciting
+The interaction with the Robot was … predicatable --- unpredictable
+The interaction with the Robot was … fast ---- slow
+The interaction with the Robot was … obstructive --- supportive
+The interaction with the Robot was … good -- bad 
+The interaction with the Robot was … complicated --- easy
+The interaction with the Robot was … usual --- leading Edge
+The interaction with the Robot was … motivating --- demotivating
+The interaction with the Robot was … meets expectations -- does not meet expecations
+The interaction with the Robot was … inefficent --- effiecent
+The interaction with the Robot was … clear --- confusing
+The interaction with the Robot was … impracticle --- practicle 
+The interaction with the Robot was … organized --- cluttered
+The interaction with the Robot was … attractive --- unatrattrcive
+The interaction with the Robot was … conservative -- innovative
+
+Please provide any additional comments of Feedback.
+
+EXTRA FRAGEN 
+STUDIE !!!
+
+EINLEITUNG SCIRPT Vorlesen
+Einleitung:
+
+Thank you for beeing part of my study. In This study you will test a Setup for drawing with a pen plotter. I will ask you some Questions throughout the Tasks. I would like to record you during during These Tasks, the will be pseudomized and only used to evaluate this study. I will also be taking some Pictures throughout the study, These will also be pseudomized and only used for the study.There is no Prior knowdledge or artistic skills requiered. Before we beginn i would ask you to read this page (consent paper) and sign it if you are ok with me using this data for the Study. And then id ask you to fill out a demgraphic questioneer. If you have Questions at any time over the period of the Study feel free to ask, if you at any time want to stop or leave, you can do so. Otherwise i hope you have some fun and let me know when you filled out the demographic questioneer so we can start with Task 1.
+
+Rechtliches unterschreiben.
+
+DEMOGRAPHIC questions beantworten
+
+Task 1 Baseline test where the user just draws and the robot draws a pre defined Flower!
+
+" For the first Task id like to ask you to draw on the paper. You can draw anything youd like for as Long as youd like. After you are done the Robot will draw a Flower in the Center of the paper. Let me know when you are done. 
+
+1. How creative did you feel while creativing with the Robot? Feeling not creative 1-7 Feeling very creative 
+	1.1Did knowing that the robot will draw something influence your creative process. 	If so how?
+
+2. How much to you feel like being the creator of the Image? not Feeling like the creator 1-7 Feeling like the creator.
+	2.1 Based on 2., why do you feel like the creator of the Image or why do you not 	feel like the creator?
+
+3. If you have past drawing experience, how do you compare this to other drawing experiences?
+
+4. How could the interaction with the Robot be improved?
+
+CSI (1) ausfüllen
+
+Task 2 Minimal Input -> The robot will detect all shapes drawn by the user and at random draw some of them onto the paper and fill them out with a pattern, the robot will try and do this on the empty spots of paper. 
+
+"For the Second Task i would ask you to draw on the paper, you can draw anything youd like, as Long as youd like. But, Keep in mind that the robot will draw after you are done. This time the Robots drawing will be based on your drawing. Let me know when you are done."
+
+1.To what extend do you think the drawing of the plotter dependet on your drawing? the results wasnt dependent on my drawing 1-7 the results was dependent on my drawing .
+	1.1 Which ascpects f your drawing do you think influenced the Plotters drawing?
+
+2.  How creative did you feel while creativing with the Robot? Feeling not creative 1-7 Feeling very creative.
+	2.1 Does knowing that the robot will draw after your done infleunce your creative 	process while drawing? If so how, if not why ? 
+
+3.How much to you feel like being the creator of the Image? not Feeling like the creator 1-7 Feeling like the creator.
+
+CSI (1) ausfüllen
+
+Task 3 Robot goes first. --> The robot will draw a set of random Patterns over the paper.
+
+"For the Third Task id like to ask you to wait for the Robot to finish, then you can draw what you like as Long as you like. Let me know when you are done.
+
+1.How creative did you feel while creativing with the Robot? Feeling not creative 1-7 Feeling very creative.
+	1.1 Did you robots drawing influence your creative process? If so how, if not why ?
+
+2. How much to you feel like being the creator of the Image? not Feeling like the creator 1-7 Feeling like the creator.
+	2.1 Based on 2., why do you feel like the creator of the Image or why do you not 	feel like the creator?
+
+3. How satisfied are you with the final drawing? not satisfied at all 1-7 completly satisfied.
+	3.1 based on the previous Questios ? Why or why are you not satisfied with he 	result ?
+
+ZUSATZ
+
+1. Which other Tasks could you Image using the pen plotter for?
+
+2. which group of users would you think would most enjoy using this Setup?
+
+3. How could the Setup with the pen plotter be improved?
+
+4. How do you think the Pen Plotters drawing depend on your drawings, how does it work ?
+
+CSI (2) Factor fragen. 
+
+Auswertung von CSI für die Creativen Support 
+Auswertung der anderen Fragen für Creative Process + (Authorship with Robots)
+Nach x Aspekten
+
+1. Creative Process
+2. Feeling of Authorship
+3. 
+4.
+5.
+6.
+
+
+
+

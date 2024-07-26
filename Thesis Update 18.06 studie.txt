@@ -1,0 +1,123 @@
+Thesis Update 18.06
+
+Remove on Personal Questioneer the highest level of education
+Rating der persönlichen questions auch als likert 
+Mit experienc of robotic = verständis des Roboters, Kenntnisse mit Arduino usw.
+could also be removed
+
+What does the robot draw
+
+
+Low impact
+detect existing shape- save shapes- copy exsiting shapes on empty space
+
+high Impact 
+add existing shapes on empty space and add patters onto shapes rawn by the user 
+
+Based of Lisa Taskquestioneer
+1-10Likert Scala and then A-B Questions 
+Extra Questions 
+The Interaction with the Robot was … annoyingand 0 --- 7 enjoable 
+The interaction with the Robot was ... not understandable 0 --- understanable
+The interaction with the Robot was … creative --- dull
+The interaction with the Robot was … easy to learn --- dificult to learn
+The interaction with the Robot was … valuable --- inferior
+The interaction with the Robot was … boring --- exciting
+The interaction with the Robot was … predicatable --- unpredictable
+The interaction with the Robot was … fast ---- slow
+The interaction with the Robot was … obstructive --- supportive
+The interaction with the Robot was … good -- bad 
+The interaction with the Robot was … complicated --- easy
+The interaction with the Robot was … usual --- leading Edge
+The interaction with the Robot was … motivating --- demotivating
+The interaction with the Robot was … meets expectations -- does not meet expecations
+The interaction with the Robot was … inefficent --- effiecent
+The interaction with the Robot was … clear --- confusing
+The interaction with the Robot was … impracticle --- practicle 
+The interaction with the Robot was … organized --- cluttered
+The interaction with the Robot was … attractive --- unatrattrcive
+The interaction with the Robot was … conservative -- innovative
+
+Please provide any additional comments of Feedback.
+
+EXTRA FRAGEN 
+STUDIE !!!
+
+EINLEITUNG SCIRPT Vorlesen
+Einleitung:
+
+Thank you for beeing part of my study. In This study you will test a Setup for drawing with a pen plotter. I will ask you some Questions throughout the Tasks. I would like to record you during during These Tasks, the will be pseudomized and only used to evaluate this study. I will also be taking some Pictures throughout the study, These will also be pseudomized and only used for the study.There is no Prior knowdledge or artistic skills requiered. Before we beginn i would ask you to read this page (consent paper) and sign it if you are ok with me using this data for the Study. And then id ask you to fill out a demgraphic questioneer. If you have Questions at any time over the period of the Study feel free to ask, if you at any time want to stop or leave, you can do so. Otherwise i hope you have some fun and let me know when you filled out the demographic questioneer so we can start with Task 1.
+
+Rechtliches unterschreiben.
+
+DEMOGRAPHIC questions beantworten
+
+Task 1 Baseline test where the user just draws and the robot draws a pre defined Flower!
+
+" For the first Task id like to ask you to draw on the paper. You can draw anything youd like for as Long as youd like. After you are done the Robot will draw a Flower in the Center of the paper. Let me know when you are done. 
+
+1. How creative did you feel while creativing with the Robot? Feeling not creative 1-7 Feeling very creative 
+	1.1Did knowing that the robot will draw something influence your creative process. 	If so how?
+
+2. How much to you feel like being the creator of the Image? not Feeling like the creator 1-7 Feeling like the creator.
+	2.1 Based on 2., why do you feel like the creator of the Image or why do you not 	feel like the creator?
+
+3. If you have past drawing experience, how do you compare this to other drawing experiences?
+
+4. How could the interaction with the Robot be improved?
+
+CSI (1) ausfüllen
+
+Task 2 Minimal Input -> The robot will detect all shapes drawn by the user and at random draw some of them onto the paper and fill them out with a pattern, the robot will try and do this on the empty spots of paper. 
+
+"For the Second Task i would ask you to draw on the paper, you can draw anything youd like, as Long as youd like. But, Keep in mind that the robot will draw after you are done. This time the Robots drawing will be based on your drawing. Let me know when you are done."
+
+1.To what extend do you think the drawing of the plotter dependet on your drawing? the results wasnt dependent on my drawing 1-7 the results was dependent on my drawing .
+	1.1 Which ascpects f your drawing do you think influenced the Plotters drawing?
+
+2.  How creative did you feel while creativing with the Robot? Feeling not creative 1-7 Feeling very creative.
+	2.1 Does knowing that the robot will draw after your done infleunce your creative 	process while drawing? If so how, if not why ? 
+
+3.How much to you feel like being the creator of the Image? not Feeling like the creator 1-7 Feeling like the creator.
+
+CSI (1) ausfüllen
+
+Task 3 Robot goes first. --> The robot will draw a set of random Patterns over the paper.
+
+"For the Third Task id like to ask you to wait for the Robot to finish, then you can draw what you like as Long as you like. Let me know when you are done.
+
+1.How creative did you feel while creativing with the Robot? Feeling not creative 1-7 Feeling very creative.
+	1.1 Did you robots drawing influence your creative process? If so how, if not why ?
+
+2. How much to you feel like being the creator of the Image? not Feeling like the creator 1-7 Feeling like the creator.
+	2.1 Based on 2., why do you feel like the creator of the Image or why do you not 	feel like the creator?
+
+3. How satisfied are you with the final drawing? not satisfied at all 1-7 completly satisfied.
+	3.1 based on the previous Questios ? Why or why are you not satisfied with he 	result ?
+
+ZUSATZ
+
+1. Which other Tasks could you Image using the pen plotter for?
+
+2. which group of users would you think would most enjoy using this Setup?
+
+3. How could the Setup with the pen plotter be improved?
+
+4. How do you think the Pen Plotters drawing depend on your drawings, how does it work ?
+
+CSI (2) Factor fragen. 
+
+Auswertung von CSI für die Creativen Support 
+Auswertung der anderen Fragen für Creative Process + (Authorship with Robots)
+Nach x Aspekten
+
+1. Creative Process
+2. Feeling of Authorship
+3. 
+4.
+5.
+6.
+
+
+
+

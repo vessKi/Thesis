@@ -14,8 +14,8 @@ backpack
 banana
 bandage
 barn
-baseball
 baseball bat
+baseball
 basket
 basketball
 bat
@@ -64,8 +64,8 @@ carrot
 castle
 cat
 ceiling fan
-cello
 cell phone
+cello
 chair
 chandelier
 church
@@ -125,8 +125,8 @@ foot
 fork
 frog
 frying pan
-garden
 garden hose
+garden
 giraffe
 goatee
 golf club
@@ -151,8 +151,8 @@ hot air balloon
 hot dog
 hot tub
 hourglass
-house
 house plant
+house
 hurricane
 ice cream
 jacket
@@ -202,8 +202,8 @@ octopus
 onion
 oven
 owl
-paintbrush
 paint can
+paintbrush
 palm tree
 panda
 pants
@@ -298,6 +298,7 @@ sweater
 swing set
 sword
 syringe
+t-shirt
 table
 teapot
 teddy-bear
@@ -324,7 +325,6 @@ triangle
 trombone
 truck
 trumpet
-t-shirt
 umbrella
 underwear
 van
