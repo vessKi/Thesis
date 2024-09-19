@@ -8,7 +8,7 @@ import glob
 # Defining the dimensions of checkerboard
 CHECKERBOARD = (7,7)
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-np.load('calibration_data.npz')
+np.load('C:\\Users\\kilia\\Desktop\\COOP\\Thesis\\calibration_data.npz')
 # Creating vector to store vectors of 3D points for each checkerboard image
 objpoints = []
 # Creating vector to store vectors of 2D points for each checkerboard image
@@ -20,8 +20,11 @@ objp = np.zeros((1, CHECKERBOARD[0] * CHECKERBOARD[1], 3), np.float32)
 objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
 prev_img_shape = None
  
-# Extracting path of individual image stored in a given directory
-images = glob.glob('C:/Users/user/Desktop/Git/Thesis/chess/*.jpg')
+# Extracting path of individual image stored in a given directoryimages = glob.glob('C:\\Users\\kilia\\Desktop\\COOP\\Thesis\\chess\\*.jpg')
+images = glob.glob('C:\\Users\\kilia\\Desktop\\COOP\\Thesis\\chess\\*.jpg')
+
+
+
 for fname in images:
     img = cv2.imread(fname)
     gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
